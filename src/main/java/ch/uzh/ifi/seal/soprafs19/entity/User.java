@@ -8,6 +8,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 @Entity
 public class User implements Serializable {
@@ -17,13 +20,17 @@ public class User implements Serializable {
 
 	@Id
 	@GeneratedValue
-	private Long id;
+	private Long Id;
 	
 	@Column(nullable = false) 
 	private String name;
 	
 	@Column(nullable = false, unique = true) 
 	private String username;
+
+
+	@Column(nullable = false)
+	private String password;
 	
 	@Column(nullable = false, unique = true) 
 	private String token;
@@ -31,12 +38,19 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private UserStatus status;
 
+
+	@Column(nullable = false)
+	private String creationDate;
+
+	@Column(nullable = true)
+	private String birthday;
+
 	public Long getId() {
-		return id;
+		return Id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(Long Id) {
+		this.Id = Id;
 	}
 
 	public String getName() {
@@ -55,6 +69,20 @@ public class User implements Serializable {
 		this.username = username;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getBirthday() { return birthday; }
+
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+
 	public String getToken() {
 		return token;
 	}
@@ -69,6 +97,17 @@ public class User implements Serializable {
 
 	public void setStatus(UserStatus status) {
 		this.status = status;
+	}
+
+	public String getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(){
+		Date now = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+		String nowStr = dateFormat.format(now);
+		this.creationDate = nowStr;
 	}
 
 	@Override
