@@ -1,3 +1,4 @@
+//Post schicken, Put updaten, Get zurückholen
 package ch.uzh.ifi.seal.soprafs19.controller;
 
 import ch.uzh.ifi.seal.soprafs19.entity.User;
@@ -23,7 +24,7 @@ public class UserController {
 
     @GetMapping("/users")
     Iterable<User> all() {
-        //System.out.println("User werden gesucht!");
+        System.out.println("User werden gesucht!");
         //System.out.println(service.getUsers());
         return service.getUsers();
     }
