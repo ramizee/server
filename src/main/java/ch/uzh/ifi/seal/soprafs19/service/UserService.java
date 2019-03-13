@@ -39,8 +39,8 @@ public class UserService {
 
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.ONLINE);
-        newUser.setCreationDate();
+        newUser.setStatus(UserStatus.OFFLINE);
+        //newUser.setCreationDate();
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
@@ -48,10 +48,40 @@ public class UserService {
 
     public User login(User user) {
         User dbUser = userRepository.findByUsername(user.getUsername());
-        if (dbUser.getPassword() == user.getPassword()) {
+        if (dbUser.getPassword().equals(user.getPassword())) {
+            dbUser.setStatus(UserStatus.ONLINE);
+            dbUser = userRepository.save(dbUser);
             return dbUser;
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Password does not match user passsword");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Password does not match with user password");
         }
     }
+
+    public User logout(long id) {
+        User user = userRepository.findById(id);
+        user.setStatus(UserStatus.OFFLINE);
+        return user;
+    }
+
+    public User getUserByToken(String token) {
+        User dbUser = userRepository.findByToken(token);
+        if (dbUser == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not logged in");
+        }
+        return dbUser;
+    }
+
+    public User replaceUser(long userId, User user){
+        //User checkUser = this.userRepository.findByUsername(user.getUsername());
+        User newUser = getUser(userId);
+        if(newUser.getUsername() != user.getUsername() && user.getUsername() != null){
+            newUser.setUsername(user.getUsername());
+        }
+        /*if(newUser.getBirthday() != user.getBirthday() && user.getBirthday() != null){
+            newUser.setBirthday(user.getBirthday());
+        }*/
+        userRepository.save(newUser);
+        return newUser;
+    }
+
 }

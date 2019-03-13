@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Entity
 public class User implements Serializable {
@@ -104,7 +103,7 @@ public class User implements Serializable {
 		return creationDate;
 	}
 
-	public void setCreationDate(){
+	public void setCreationDate(String creationDate){
 		Date now = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		String nowStr = dateFormat.format(now);
