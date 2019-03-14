@@ -38,12 +38,18 @@ public class UserService {
     }
 
     public User createUser(User newUser) {
-        newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.OFFLINE);
-        //newUser.setCreationDate();
-        userRepository.save(newUser);
-        log.debug("Created Information for User: {}", newUser);
-        return newUser;
+        User dbUser = userRepository.findByUsername(newUser.getUsername());
+        if (dbUser != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+        }
+        else {
+            newUser.setToken(UUID.randomUUID().toString());
+            newUser.setStatus(UserStatus.OFFLINE);
+            //newUser.setCreationDate();
+            userRepository.save(newUser);
+            log.debug("Created Information for User: {}", newUser);
+            return newUser;
+        }
     }
 
     public User login(User user) {
@@ -53,7 +59,7 @@ public class UserService {
             dbUser = userRepository.save(dbUser);
             return dbUser;
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Password does not match with user password");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Wrong username or password");
         }
     }
 
@@ -72,16 +78,20 @@ public class UserService {
     }
 
     public User replaceUser(long userId, User user){
-        //User checkUser = this.userRepository.findByUsername(user.getUsername());
-        User newUser = getUser(userId);
-        if(newUser.getUsername() != user.getUsername() && user.getUsername() != null){
-            newUser.setUsername(user.getUsername());
+        User checkUser = this.userRepository.findByUsername(user.getUsername());
+        if (checkUser != null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
         }
-        /*if(newUser.getBirthday() != user.getBirthday() && user.getBirthday() != null){
-            newUser.setBirthday(user.getBirthday());
-        }*/
-        userRepository.save(newUser);
-        return newUser;
+        else {
+            User newUser = getUser(userId);
+            if (newUser.getUsername() != user.getUsername() && user.getUsername() != null) {
+                newUser.setUsername(user.getUsername());
+            }
+            if (newUser.getBirthday() != user.getBirthday() && user.getBirthday() != null) {
+                newUser.setBirthday(user.getBirthday());
+            }
+            userRepository.save(newUser);
+            return newUser;
+        }
     }
-
 }
