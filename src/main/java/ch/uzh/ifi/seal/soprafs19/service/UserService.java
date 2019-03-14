@@ -4,7 +4,6 @@ package ch.uzh.ifi.seal.soprafs19.service;
 import ch.uzh.ifi.seal.soprafs19.constant.UserStatus;
 import ch.uzh.ifi.seal.soprafs19.entity.User;
 import ch.uzh.ifi.seal.soprafs19.repository.UserRepository;
-import ch.uzh.ifi.seal.soprafs19.exceptions.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class UserService {
         else {
             newUser.setToken(UUID.randomUUID().toString());
             newUser.setStatus(UserStatus.OFFLINE);
-            //newUser.setCreationDate();
+            newUser.setCreationDate();
             userRepository.save(newUser);
             log.debug("Created Information for User: {}", newUser);
             return newUser;
@@ -54,7 +53,10 @@ public class UserService {
 
     public User login(User user) {
         User dbUser = userRepository.findByUsername(user.getUsername());
-        if (dbUser.getPassword().equals(user.getPassword())) {
+        if (dbUser == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Username doesn't exist!");
+        }
+        else if (dbUser.getPassword().equals(user.getPassword())) {
             dbUser.setStatus(UserStatus.ONLINE);
             dbUser = userRepository.save(dbUser);
             return dbUser;
@@ -64,16 +66,9 @@ public class UserService {
     }
 
     public User logout(long id) {
-        User user = userRepository.findById(id);
-        user.setStatus(UserStatus.OFFLINE);
-        return user;
-    }
-
-    public User getUserByToken(String token) {
-        User dbUser = userRepository.findByToken(token);
-        if (dbUser == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not logged in");
-        }
+        User dbUser = userRepository.findById(id);
+        dbUser.setStatus(UserStatus.OFFLINE);
+        userRepository.save(dbUser);
         return dbUser;
     }
 
@@ -83,15 +78,15 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
         }
         else {
-            User newUser = getUser(userId);
-            if (newUser.getUsername() != user.getUsername() && user.getUsername() != null) {
-                newUser.setUsername(user.getUsername());
+            User dbUser = getUser(userId);
+            if (dbUser.getUsername() != user.getUsername() && user.getUsername() != null) {
+                dbUser.setUsername(user.getUsername());
             }
-            if (newUser.getBirthday() != user.getBirthday() && user.getBirthday() != null) {
-                newUser.setBirthday(user.getBirthday());
+            if (dbUser.getBirthday() != user.getBirthday() && user.getBirthday() != null) {
+                dbUser.setBirthday(user.getBirthday());
             }
-            userRepository.save(newUser);
-            return newUser;
+            userRepository.save(dbUser);
+            return dbUser;
         }
     }
 }

@@ -2,7 +2,6 @@
 package ch.uzh.ifi.seal.soprafs19.controller;
 
 import ch.uzh.ifi.seal.soprafs19.entity.User;
-import ch.uzh.ifi.seal.soprafs19.exceptions.UserException;
 import ch.uzh.ifi.seal.soprafs19.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,22 +18,10 @@ public class UserController {
     }
 
     @GetMapping("/users") //bekommt alle user zurück mit Funktion getUsers
-    Iterable<User> all() {
+    Iterable <User> all() {
         //System.out.println("User werden gesucht!");
         return service.getUsers();
     }
-
-    /*@GetMapping("/users/me")
-        //System.out.println("User mit dieser ID wird mit GetMapping gesucht");
-    ResponseEntity <User> me(@RequestHeader("Access-Token") String token) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(service.getUserByToken(token));
-        }
-        catch (Exception ex) {
-            throw new ResponseStatusException(
-            HttpStatus.NOT_FOUND, "User not found", ex);
-        }
-    }*/
 
     @GetMapping("/users/{userId}")
         //System.out.println("User mit dieser ID wird mit GetMapping gesucht");
@@ -47,9 +34,8 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login") //mit token identifizieren
-    ResponseEntity<User> login(@RequestBody User user) {
-        //System.out.println("Logging in!");
+    @PostMapping("/login")
+    ResponseEntity <User> login(@RequestBody User user) {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(service.login(user));
         }
@@ -63,13 +49,11 @@ public class UserController {
 
     @PostMapping("/logout/{userId}")
     User logout(@PathVariable ("userId") long id) {
-        //System.out.println("Logging out!");
         return this.service.logout(id);
     }
 
 
     @PostMapping("/users")
-        //System.out.println("User werden mit PostMapping gesucht");
     ResponseEntity <User> createUser(@RequestBody User newUser) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(service.createUser(newUser));

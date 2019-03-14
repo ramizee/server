@@ -42,7 +42,7 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private String creationDate;
 
-	@Column(nullable = true)
+	@Column
 	private String birthday;
 
 	public Long getId() {
@@ -103,7 +103,7 @@ public class User implements Serializable {
 		return creationDate;
 	}
 
-	public void setCreationDate(String creationDate){
+	public void setCreationDate(){
 		Date now = new Date();
 		DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		String nowStr = dateFormat.format(now);
